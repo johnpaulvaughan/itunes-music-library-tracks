@@ -14,7 +14,7 @@ describe('#getItunesTracks', () => {
         let validXML = require('path').basename(__dirname) + "/iTunes Library.xml";
 
         let stream = getItunesTracks(validXML)
-        stream._read = function() {}
+        //stream._read = function() {}
         stream.on('data', function(track) {
             console.log(JSON.parse(track))
 

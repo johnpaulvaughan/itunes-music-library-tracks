@@ -39,7 +39,7 @@ function getItunesTracks(librarypath) {
                 END OF CURRENT TRACK
                 */
                 if (module.exports.objectIsMusicTrack(trackObj)) {
-                    console.log("built track \"" + trackObj.Name + "\" by \"" + trackObj.Artist + "\"");
+                    //console.log(`built track "${trackObj.Name}" by "${trackObj.Artist}"`)
                     trackObj['Library Persistent ID'] = libraryID; //add extra metadata
                     //event.sender.send('ITUNES_TRACK', trackObj) //push it to the track stream
                     //console.log(trackObj)
@@ -56,11 +56,11 @@ function getItunesTracks(librarypath) {
         }
     });
     streamIn.on('end', function () {
-        console.log('xml stream has ended');
+        //console.log('xml stream has ended')
         streamOut.push(null);
     });
     streamIn.on('error', function (err) {
-        console.log('stream error: ' + err);
+        //console.log('stream error: ' + err)
         streamOut.push(null);
     });
     return streamOut;
