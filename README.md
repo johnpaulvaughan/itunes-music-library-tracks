@@ -1,4 +1,4 @@
-# iTunes Music Library Path
+# iTunes Music Library Tracks
 This module loops through iTunes Music Library XML and spits out a stream of JSON objects for each track. 
 
 ## Motivation
