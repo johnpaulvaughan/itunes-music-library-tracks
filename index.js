@@ -10,11 +10,12 @@ var byline = require('byline');
  */
 function getItunesTracks(librarypath) {
     var libraryID;
-    var streamIn;
-    var streamOut = new stream_1.Readable;
     var trackObj = {};
     var isTrack = false;
     var line;
+    var streamIn;
+    var streamOut = new stream_1.Readable;
+    streamOut._read = function () { };
     streamIn = fs.createReadStream(librarypath);
     streamIn = byline.createStream(streamIn);
     streamIn.on('readable', function () {

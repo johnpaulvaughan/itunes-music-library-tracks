@@ -13,11 +13,13 @@ const byline = require('byline')
 export function getItunesTracks(librarypath: string) {
 
 	let libraryID: string
-	let streamIn: any
-	let streamOut: any = new Readable
 	let trackObj: any = {}
 	let isTrack: boolean = false
 	let line: any
+
+	let streamIn: any
+	let streamOut: any = new Readable
+	streamOut._read = function () { /* needed to fix init issues */ }
 
 	streamIn = fs.createReadStream(librarypath)
 	streamIn = byline.createStream(streamIn)

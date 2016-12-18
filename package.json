@@ -1,6 +1,6 @@
 {
   "name": "@johnpaulvaughan/itunes-music-library-tracks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Creates an stream of tracks from an iTunes Library XML file",
   "main": "index.js",
   "directories": {
