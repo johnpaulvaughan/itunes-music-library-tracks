@@ -7,54 +7,51 @@ var getItunesTracks = require('../index').getItunesTracks;
 
 
 describe('#getItunesTracks', () => {
-    it('should return a stream', (done) => {
-        
-        let count = 0
 
+    it('should return music tracks', (done) => {
         let validXML = require('path').basename(__dirname) + "/iTunes Library.xml";
-
         let stream = getItunesTracks(validXML)
-        //stream._read = function() {}
-        stream.on('data', function(track) {
-            console.log(JSON.parse(track))
-
+        stream.on('data', function(res) {
+            let track = JSON.parse(res)
+            expect(track).to.be.an('object');
+            expect(track).to.have.property("Artist")
         })
-
-        stream.on('end', () => {
-            console.log('test stream has ended')
+        stream.on('error', function(err) {
+            //done()
+        })
+        stream.on('end', function(res) {
             done()
         })
+    }).timeout(5000);
 
-
-        stream.on('error', (err) => {
-            console.log('stream error: ' + err)
+    it('should emit an \'no tracks\' error when supplied a non itunes file', (done) => {
+        let invalidXML = require('path').basename(__dirname) + "/not an iTunes Library.xml";
+        let stream = getItunesTracks(invalidXML)
+        stream.on('error', function(err) {
+            //console.log(err)
+            expect(err).to.equal('No tracks exist in the file')
             done()
         })
-
-
-                /*
-                      stream.on('end', function () {
-                        //assert.equal(5, customers.length);
-                        //assert.equal('drew', customers[0].name);
-                        //assert.equal(3, api.getCallCount());
-
-                        done();
-                      });
-                */
-
-
-
-    }).timeout(50000);
-
-    /*
-        it('should reject with Error:"File does not exist" if the xml is not accessible', () => {
-            let nonExistentXML = require('path').basename(__dirname) + "/fake-File-Does-Not-Exist.xml.xml"
-;            return expect(getID(nonExistentXML)).to.be.rejectedWith('XML file does not exist')
+        stream.on('end', function(res) {
+            throw new Error("failed test. Should have received an error before \'end\'");;
+            done()
         })
+    }).timeout(5000);
 
-        it('should reject with Error:"unable to find ID" if it cannot find the ID', () => {
-            let fakeXML = require('path').basename(__dirname) + "/not an iTunes Library.xml";
-            return expect(getID(fakeXML)).to.be.rejectedWith('Unable to find the iTunes library ID. Check the XML is valid')
+    it('should return \'does not exist\' error when supplied a file that does not exist', (done) => {
+        let badFilepath = require('path').basename(__dirname) + "/not a real file.txt";
+        let stream = getItunesTracks(badFilepath)
+        stream.on('error', function(err) {
+            //console.log(err)
+            expect(err).to.equal('The file you selected does not exist')
+            done()
         })
-        */
+        stream.on('end', function() {
+            throw new Error("failed test. Should have received an error before \'end\'");
+            done()
+        })
+    }).timeout(5000);
+
+
+
 });

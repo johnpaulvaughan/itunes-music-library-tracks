@@ -16,69 +16,85 @@ export function getItunesTracks(librarypath: string) {
 	let trackObj: any = {}
 	let isTrack: boolean = false
 	let line: any
+	let trackCount: number = 0
 
 	let streamIn: any
 	let streamOut: any = new Readable
-	streamOut._read = function () { /* needed to fix init issues */ }
+	streamOut._read = function() { /* needed this stub to fix init issues */ }
+
 
 	streamIn = fs.createReadStream(librarypath)
+	streamIn.on('error', () => streamOut.emit("error", 'The file you selected does not exist'))
 	streamIn = byline.createStream(streamIn)
+	
+
+
+
+	/*
+	if (!module.exports.validPath(librarypath)) { 
+		streamOut.emit("error", 'Not a valid XML file')
+	}
+	*/
+
 	streamIn.on('readable', () => {
-
-
 		while (null !== (line = streamIn.read())) {
-
 			if (line.indexOf("<key>Library Persistent ID</key>") > -1) {
-				/* 
-				ADD A KEY/VALUE PROPERTY 
-				*/
+				/* ADD A KEY/VALUE PROPERTY */
 				let iDString = String(line).match("<key>Library Persistent ID</key><string>(.*)</string>")
 				libraryID = iDString[1]
 			}
 			else if (line.indexOf("<dict>") > -1) {
-				/*
-				START A NEW TRACK
-				*/
+				/* START A NEW TRACK */
 				trackObj = {}
 				isTrack = true
-			} else if (line.indexOf("</dict>") > -1) {
-				/* 
-				END OF CURRENT TRACK 
-				*/
-				if (module.exports.objectIsMusicTrack(trackObj)) {
-
-					//console.log(`built track "${trackObj.Name}" by "${trackObj.Artist}"`)
-					trackObj['Library Persistent ID'] = libraryID //add extra metadata
-					//event.sender.send('ITUNES_TRACK', trackObj) //push it to the track stream
-					//console.log(trackObj)
-					streamOut.push(JSON.stringify(trackObj))
-
-				}
-
-				isTrack = false
-
 			} else if (line.indexOf("<key>") > -1) {
-				/* 
-				ADD A KEY/VALUE PROPERTY 
-				*/
+				/* ADD A PROPERTY TO THE TRACK */
 				Object.assign(trackObj, module.exports.buildProperty(line));
+			} else if (line.indexOf("</dict>") > -1) {
+				/* END OF CURRENT TRACK */
+				if (module.exports.objectIsMusicTrack(trackObj)) {
+					trackObj['Library Persistent ID'] = libraryID //add extra metadata
+					trackCount++
+					streamOut.push(JSON.stringify(trackObj))
+				}
+				isTrack = false
 			}
-
 		}
 	})
 
 	streamIn.on('end', () => {
-		//console.log('xml stream has ended')
+		if (trackCount == 0) streamOut.emit("error", 'No tracks exist in the file')
+		trackCount = 0 //reset it
 		streamOut.push(null)
+
 	})
 
 	streamIn.on('error', (err) => {
-		//console.log('stream error: ' + err)
-		streamOut.push(null)
+		streamOut.emit("error", 'Error parsing iTunes XML')
 	})
 
 	return streamOut
 }
+
+
+
+
+
+/**
+ * Validates that the file is an itunes XML file. 
+ *
+ * @param  string
+ * @return Boolean
+ */
+export function validPath(librarypath) {
+	let extension = path.extname(librarypath)
+	if (extension != '.xml') return false
+	return true
+}
+
+
+
+
 
 /**
  * Ensures we have a music track and not a video or other non-music item. 

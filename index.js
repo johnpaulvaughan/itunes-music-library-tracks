@@ -1,4 +1,5 @@
 "use strict";
+var path = require('path');
 var fs = require('fs');
 var stream_1 = require('stream');
 var byline = require('byline');
@@ -13,59 +14,70 @@ function getItunesTracks(librarypath) {
     var trackObj = {};
     var isTrack = false;
     var line;
+    var trackCount = 0;
     var streamIn;
     var streamOut = new stream_1.Readable;
     streamOut._read = function () { };
     streamIn = fs.createReadStream(librarypath);
+    streamIn.on('error', function () { return streamOut.emit("error", 'The file you selected does not exist'); });
     streamIn = byline.createStream(streamIn);
+    /*
+    if (!module.exports.validPath(librarypath)) {
+        streamOut.emit("error", 'Not a valid XML file')
+    }
+    */
     streamIn.on('readable', function () {
         while (null !== (line = streamIn.read())) {
             if (line.indexOf("<key>Library Persistent ID</key>") > -1) {
-                /*
-                ADD A KEY/VALUE PROPERTY
-                */
+                /* ADD A KEY/VALUE PROPERTY */
                 var iDString = String(line).match("<key>Library Persistent ID</key><string>(.*)</string>");
                 libraryID = iDString[1];
             }
             else if (line.indexOf("<dict>") > -1) {
-                /*
-                START A NEW TRACK
-                */
+                /* START A NEW TRACK */
                 trackObj = {};
                 isTrack = true;
             }
+            else if (line.indexOf("<key>") > -1) {
+                /* ADD A PROPERTY TO THE TRACK */
+                Object.assign(trackObj, module.exports.buildProperty(line));
+            }
             else if (line.indexOf("</dict>") > -1) {
-                /*
-                END OF CURRENT TRACK
-                */
+                /* END OF CURRENT TRACK */
                 if (module.exports.objectIsMusicTrack(trackObj)) {
-                    //console.log(`built track "${trackObj.Name}" by "${trackObj.Artist}"`)
                     trackObj['Library Persistent ID'] = libraryID; //add extra metadata
-                    //event.sender.send('ITUNES_TRACK', trackObj) //push it to the track stream
-                    //console.log(trackObj)
+                    trackCount++;
                     streamOut.push(JSON.stringify(trackObj));
                 }
                 isTrack = false;
             }
-            else if (line.indexOf("<key>") > -1) {
-                /*
-                ADD A KEY/VALUE PROPERTY
-                */
-                Object.assign(trackObj, module.exports.buildProperty(line));
-            }
         }
     });
     streamIn.on('end', function () {
-        //console.log('xml stream has ended')
+        if (trackCount == 0)
+            streamOut.emit("error", 'No tracks exist in the file');
+        trackCount = 0; //reset it
         streamOut.push(null);
     });
     streamIn.on('error', function (err) {
-        //console.log('stream error: ' + err)
-        streamOut.push(null);
+        streamOut.emit("error", 'Error parsing iTunes XML');
     });
     return streamOut;
 }
 exports.getItunesTracks = getItunesTracks;
+/**
+ * Validates that the file is an itunes XML file.
+ *
+ * @param  string
+ * @return Boolean
+ */
+function validPath(librarypath) {
+    var extension = path.extname(librarypath);
+    if (extension != '.xml')
+        return false;
+    return true;
+}
+exports.validPath = validPath;
 /**
  * Ensures we have a music track and not a video or other non-music item.
  *
