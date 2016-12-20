@@ -25,6 +25,10 @@ trackStream.on('data', function(track) {
     console.log(JSON.parse(track))
 })
 
+trackStream.on('error', function(err) {
+    console.log(err)
+})
+
 trackStream.on('end', () => {
 console.log('finished parsing xml stream')
 })
