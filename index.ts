@@ -26,7 +26,7 @@ export function getItunesTracks(librarypath: string) {
 	streamIn = fs.createReadStream(librarypath)
 	streamIn.on('error', () => streamOut.emit("error", 'The file you selected does not exist'))
 	streamIn = byline.createStream(streamIn)
-	
+
 
 
 
@@ -49,7 +49,7 @@ export function getItunesTracks(librarypath: string) {
 				isTrack = true
 			} else if (line.indexOf("<key>") > -1) {
 				/* ADD A PROPERTY TO THE TRACK */
-				Object.assign(trackObj, module.exports.buildProperty(line));
+				(<any>Object).assign(trackObj, module.exports.buildProperty(line));
 			} else if (line.indexOf("</dict>") > -1) {
 				/* END OF CURRENT TRACK */
 				if (module.exports.objectIsMusicTrack(trackObj)) {
@@ -79,6 +79,92 @@ export function getItunesTracks(librarypath: string) {
 
 
 
+/**
+ * Creates an stream of JSON playlists from an iTunes Library XML file. 
+ *
+ * @param  String
+ * @return ReadableStream of JSON objects
+ */
+
+export function getItunesPlaylists(librarypath: string) {
+
+	let libraryID: string
+	let reachedPlaylistCollection: boolean = false
+	let playlistObj: any = {}
+	let isPlaylist: boolean = false
+	let line: any
+	let playlistCount: number = 0
+
+	let dictDepth: number = 0
+
+	let streamIn: any
+	let streamOut: any = new Readable
+	streamOut._read = function() { /* needed this stub to fix init issues */ }
+
+
+	streamIn = fs.createReadStream(librarypath)
+	streamIn.on('error', () => streamOut.emit("error", 'The file you selected does not exist'))
+	streamIn = byline.createStream(streamIn)
+
+	streamIn.on('readable', () => {
+		while (null !== (line = streamIn.read())) {
+
+			if (!reachedPlaylistCollection) {
+				if (line.indexOf("<key>Playlists</key>") > -1) reachedPlaylistCollection = true
+			} else {
+				if (line.indexOf("<dict>") > -1) {
+					dictDepth++
+					if (dictDepth == 1) {
+						/* START A NEW playlist */
+						playlistObj = {}
+						playlistObj['tracks'] = []
+					}
+				}
+				else if (line.indexOf("<key>Track ID</key>") > -1) {
+					let track = module.exports.buildProperty(line)
+					playlistObj['tracks'].push(track['Track ID'])
+				}
+				else if (line.indexOf("<key>") > -1) {
+					/* ADD A PROPERTY TO THE playlist */
+					let newProp = module.exports.buildProperty(line)
+					if (!newProp['Playlist Items']) (<any>Object).assign(playlistObj, newProp);
+				} else if (line.indexOf("</dict>") > -1) {
+					dictDepth--
+					if (dictDepth == 0) {
+						/* END OF CURRENT playlist */
+						if (module.exports.objectIsPlaylist(playlistObj)) {
+							playlistCount++
+							streamOut.push(JSON.stringify(playlistObj))
+						}
+					}
+				}
+			}
+		}
+	})
+
+	streamIn.on('end', () => {
+		if (playlistCount == 0) streamOut.emit("error", 'No playlists exist in the file')
+		playlistCount = 0 //reset it
+		streamOut.push(null)
+
+	})
+
+	streamIn.on('error', (err) => {
+		streamOut.emit("error", 'Error parsing iTunes XML')
+	})
+
+	return streamOut
+}
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Validates that the file is an itunes XML file. 
@@ -102,6 +188,18 @@ export function validPath(librarypath) {
  * @param  Object
  * @return Boolean
  */
+export function objectIsPlaylist(obj) {
+	if (obj['Playlist ID']) return true
+	else return false
+}
+
+
+/**
+ * Ensures we have a playlist and not a track, video or other non-playlist item. 
+ *
+ * @param  Object
+ * @return Boolean
+ */
 export function objectIsMusicTrack(obj) {
 	if (
 		(obj.Name || obj.Artist)
@@ -118,6 +216,10 @@ export function objectIsMusicTrack(obj) {
 	) return true
 	else return false
 }
+
+
+
+
 
 /**
  * Creates a simple object with a key/value pair from the current XML line. 

@@ -1,7 +1,8 @@
 "use strict";
-var path = require('path');
-var fs = require('fs');
-var stream_1 = require('stream');
+exports.__esModule = true;
+var path = require("path");
+var fs = require("fs");
+var stream_1 = require("stream");
 var byline = require('byline');
 /**
  * Creates an stream of JSON tracks from an iTunes Library XML file.
@@ -66,6 +67,76 @@ function getItunesTracks(librarypath) {
 }
 exports.getItunesTracks = getItunesTracks;
 /**
+ * Creates an stream of JSON playlists from an iTunes Library XML file.
+ *
+ * @param  String
+ * @return ReadableStream of JSON objects
+ */
+function getItunesPlaylists(librarypath) {
+    var libraryID;
+    var reachedPlaylistCollection = false;
+    var playlistObj = {};
+    var isPlaylist = false;
+    var line;
+    var playlistCount = 0;
+    var dictDepth = 0;
+    var streamIn;
+    var streamOut = new stream_1.Readable;
+    streamOut._read = function () { };
+    streamIn = fs.createReadStream(librarypath);
+    streamIn.on('error', function () { return streamOut.emit("error", 'The file you selected does not exist'); });
+    streamIn = byline.createStream(streamIn);
+    streamIn.on('readable', function () {
+        while (null !== (line = streamIn.read())) {
+            if (!reachedPlaylistCollection) {
+                if (line.indexOf("<key>Playlists</key>") > -1)
+                    reachedPlaylistCollection = true;
+            }
+            else {
+                if (line.indexOf("<dict>") > -1) {
+                    dictDepth++;
+                    if (dictDepth == 1) {
+                        /* START A NEW playlist */
+                        playlistObj = {};
+                        playlistObj['tracks'] = [];
+                    }
+                }
+                else if (line.indexOf("<key>Track ID</key>") > -1) {
+                    var track = module.exports.buildProperty(line);
+                    playlistObj['tracks'].push(track['Track ID']);
+                }
+                else if (line.indexOf("<key>") > -1) {
+                    /* ADD A PROPERTY TO THE playlist */
+                    var newProp = module.exports.buildProperty(line);
+                    if (!newProp['Playlist Items'])
+                        Object.assign(playlistObj, newProp);
+                }
+                else if (line.indexOf("</dict>") > -1) {
+                    dictDepth--;
+                    if (dictDepth == 0) {
+                        /* END OF CURRENT playlist */
+                        if (module.exports.objectIsPlaylist(playlistObj)) {
+                            playlistCount++;
+                            streamOut.push(JSON.stringify(playlistObj));
+                        }
+                    }
+                }
+            }
+        }
+    });
+    streamIn.on('end', function () {
+        if (playlistCount == 0)
+            streamOut.emit("error", 'No playlists exist in the file');
+        playlistCount = 0; //reset it
+        streamOut.push(null);
+    });
+    streamIn.on('error', function (err) {
+        streamOut.emit("error", 'Error parsing iTunes XML');
+    });
+    return streamOut;
+}
+exports.getItunesPlaylists = getItunesPlaylists;
+/**
  * Validates that the file is an itunes XML file.
  *
  * @param  string
@@ -80,6 +151,19 @@ function validPath(librarypath) {
 exports.validPath = validPath;
 /**
  * Ensures we have a music track and not a video or other non-music item.
+ *
+ * @param  Object
+ * @return Boolean
+ */
+function objectIsPlaylist(obj) {
+    if (obj['Playlist ID'])
+        return true;
+    else
+        return false;
+}
+exports.objectIsPlaylist = objectIsPlaylist;
+/**
+ * Ensures we have a playlist and not a track, video or other non-playlist item.
  *
  * @param  Object
  * @return Boolean
@@ -122,4 +206,3 @@ function buildProperty(line) {
     return o;
 }
 exports.buildProperty = buildProperty;
-//# sourceMappingURL=index.js.map

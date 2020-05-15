@@ -1,0 +1,122 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'publish' ]
+2 info using npm@3.10.9
+3 info using node@v7.2.0
+4 verbose publish [ '.' ]
+5 silly cache add args [ '.', null ]
+6 verbose cache add spec .
+7 silly cache add parsed spec Result {
+7 silly cache add   raw: '.',
+7 silly cache add   scope: null,
+7 silly cache add   escapedName: null,
+7 silly cache add   name: null,
+7 silly cache add   rawSpec: '.',
+7 silly cache add   spec: 'G:\\code\\itunes-music-library-tracks',
+7 silly cache add   type: 'directory' }
+8 verbose addLocalDirectory C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package.tgz not in flight; packing
+9 verbose correctMkdir C:\Users\JohnPaul\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+10 info lifecycle @johnpaulvaughan/itunes-music-library-tracks@1.0.5~prepublish: @johnpaulvaughan/itunes-music-library-tracks@1.0.5
+11 silly lifecycle @johnpaulvaughan/itunes-music-library-tracks@1.0.5~prepublish: no script for prepublish, continuing
+12 verbose tar pack [ 'C:\\Users\\JohnPaul\\AppData\\Roaming\\npm-cache\\@johnpaulvaughan\\itunes-music-library-tracks\\1.0.5\\package.tgz',
+12 verbose tar pack   'G:\\code\\itunes-music-library-tracks' ]
+13 verbose tarball C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package.tgz
+14 verbose folder G:\code\itunes-music-library-tracks
+15 verbose addLocalTarball adding from inside cache C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package.tgz
+16 verbose correctMkdir C:\Users\JohnPaul\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+17 silly cache afterAdd @johnpaulvaughan/itunes-music-library-tracks@1.0.5
+18 verbose afterAdd C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package\package.json not in flight; writing
+19 verbose correctMkdir C:\Users\JohnPaul\AppData\Roaming\npm-cache correctMkdir not in flight; initializing
+20 verbose afterAdd C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package\package.json written
+21 silly publish { name: '@johnpaulvaughan/itunes-music-library-tracks',
+21 silly publish   version: '1.0.5',
+21 silly publish   description: 'Creates an stream of tracks from an iTunes Library XML file',
+21 silly publish   main: 'index.js',
+21 silly publish   directories: { test: 'test' },
+21 silly publish   dependencies: { byline: '^5.0.0' },
+21 silly publish   devDependencies:
+21 silly publish    { '@types/node': '^6.0.48',
+21 silly publish      chai: '^3.5.0',
+21 silly publish      mocha: '^3.1.2',
+21 silly publish      typescript: '^2.0.10' },
+21 silly publish   scripts: { test: 'mocha' },
+21 silly publish   repository:
+21 silly publish    { type: 'git',
+21 silly publish      url: 'git+https://github.com/johnpaulvaughan/itunes-music-library-tracks.git' },
+21 silly publish   keywords: [ 'itunes', 'library', 'music', 'tracks' ],
+21 silly publish   author:
+21 silly publish    { name: 'John Paul Vaughan',
+21 silly publish      email: 'johnpaulvaughan@hotmail.com',
+21 silly publish      url: 'http://johnpaulvaughan.com' },
+21 silly publish   license: 'ISC',
+21 silly publish   bugs: { url: 'https://github.com/johnpaulvaughan/itunes-music-library-tracks/issues' },
+21 silly publish   homepage: 'https://github.com/johnpaulvaughan/itunes-music-library-tracks#readme',
+21 silly publish   readme: '# iTunes Music Library Tracks\r\nThis module loops through iTunes Music Library XML and spits out a stream of JSON objects for each track. \r\n\r\n## Motivation\r\nThere are similar npm modules that do this, however when trying to utilise them in an electon application they all failed in one way or another. \r\nI created my module using minimal dependencies so that it works without issue.\r\n\r\n##Installation\r\n```bash\r\n$ npm install @johnpaulvaughan/itunes-music-library-tracks --save\r\n```\r\n\r\n##Code Example\r\nSupply the module with a path to your xml file. It returns a node readStream of tracks. <br>\r\nIt throws an error if something goes wrong.\r\n\r\n\r\n```javascript\r\nlet getItunesTracks = require(\'itunes-music-library-tracks\').getItunesTracks;\r\nlet validXMLpath = \'C:\\Users\\JohnPaulVaughan\\Music\\iTunes\\iTunes Music Library.xml\'\r\n\r\nlet trackStream = getItunesTracks(validXMLpath)\r\n\r\ntrackStream.on(\'data\', function(track) {\r\n    console.log(JSON.parse(track))\r\n})\r\n\r\ntrackStream.on(\'error\', function(err) {\r\n    console.log(err)\r\n})\r\n\r\ntrackStream.on(\'end\', () => {\r\nconsole.log(\'finished parsing xml stream\')\r\n})\r\n\r\n\r\n```\r\n',
+21 silly publish   readmeFilename: 'README.md',
+21 silly publish   gitHead: 'c96dd579bc6b225d6d8c1d4c2d4f0c25d5dff4a2',
+21 silly publish   _id: '@johnpaulvaughan/itunes-music-library-tracks@1.0.5',
+21 silly publish   _shasum: '2c9ec9793de7c4ee345dfde438ade6913888a536',
+21 silly publish   _from: '.' }
+22 verbose getPublishConfig undefined
+23 silly mapToRegistry name @johnpaulvaughan/itunes-music-library-tracks
+24 silly mapToRegistry scope (from package name) @johnpaulvaughan
+25 verbose mapToRegistry no registry URL found in name for scope @johnpaulvaughan
+26 silly mapToRegistry scope (from config) @johnpaulvaughan
+27 verbose mapToRegistry no registry URL found in config for scope @johnpaulvaughan
+28 silly mapToRegistry using default registry
+29 silly mapToRegistry registry https://registry.npmjs.org/
+30 silly mapToRegistry data Result {
+30 silly mapToRegistry   raw: '@johnpaulvaughan/itunes-music-library-tracks',
+30 silly mapToRegistry   scope: '@johnpaulvaughan',
+30 silly mapToRegistry   escapedName: '@johnpaulvaughan%2fitunes-music-library-tracks',
+30 silly mapToRegistry   name: '@johnpaulvaughan/itunes-music-library-tracks',
+30 silly mapToRegistry   rawSpec: '',
+30 silly mapToRegistry   spec: 'latest',
+30 silly mapToRegistry   type: 'tag' }
+31 silly mapToRegistry uri https://registry.npmjs.org/@johnpaulvaughan%2fitunes-music-library-tracks
+32 verbose publish registryBase https://registry.npmjs.org/
+33 silly publish uploading C:\Users\JohnPaul\AppData\Roaming\npm-cache\@johnpaulvaughan\itunes-music-library-tracks\1.0.5\package.tgz
+34 verbose request uri https://registry.npmjs.org/@johnpaulvaughan%2fitunes-music-library-tracks
+35 verbose request sending authorization for write operation
+36 info attempt registry request try #1 at 7:58:39 PM
+37 verbose request using bearer token for auth
+38 verbose request id cdf123f682913d1b
+39 http request PUT https://registry.npmjs.org/@johnpaulvaughan%2fitunes-music-library-tracks
+40 http 403 https://registry.npmjs.org/@johnpaulvaughan%2fitunes-music-library-tracks
+41 verbose headers { 'content-type': 'application/json',
+41 verbose headers   'cache-control': 'max-age=0',
+41 verbose headers   'content-length': '95',
+41 verbose headers   'accept-ranges': 'bytes',
+41 verbose headers   date: 'Tue, 20 Dec 2016 08:58:39 GMT',
+41 verbose headers   via: '1.1 varnish',
+41 verbose headers   connection: 'keep-alive',
+41 verbose headers   'x-served-by': 'cache-syd1627-SYD',
+41 verbose headers   'x-cache': 'MISS',
+41 verbose headers   'x-cache-hits': '0',
+41 verbose headers   'x-timer': 'S1482224319.161163,VS0,VE769' }
+42 verbose request invalidating C:\Users\JohnPaul\AppData\Roaming\npm-cache\registry.npmjs.org\_40johnpaulvaughan_252fitunes-music-library-tracks on PUT
+43 error publish Failed PUT 403
+44 verbose stack Error: "You cannot publish over the previously published version 1.0.5." : @johnpaulvaughan/itunes-music-library-tracks
+44 verbose stack     at makeError (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\npm-registry-client\lib\request.js:302:12)
+44 verbose stack     at CachingRegistryClient.<anonymous> (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\npm-registry-client\lib\request.js:290:14)
+44 verbose stack     at Request._callback (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\npm-registry-client\lib\request.js:210:14)
+44 verbose stack     at Request.self.callback (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\request\request.js:187:22)
+44 verbose stack     at emitTwo (events.js:106:13)
+44 verbose stack     at Request.emit (events.js:191:7)
+44 verbose stack     at Request.<anonymous> (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\request\request.js:1048:10)
+44 verbose stack     at emitOne (events.js:96:13)
+44 verbose stack     at Request.emit (events.js:188:7)
+44 verbose stack     at IncomingMessage.<anonymous> (C:\Users\JohnPaul\AppData\Roaming\nvm\v7.2.0\node_modules\npm\node_modules\request\request.js:969:12)
+45 verbose statusCode 403
+46 verbose pkgid @johnpaulvaughan/itunes-music-library-tracks
+47 verbose cwd G:\code\itunes-music-library-tracks
+48 error Windows_NT 10.0.14393
+49 error argv "C:\\Program Files\\nodejs\\node.exe" "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "publish"
+50 error node v7.2.0
+51 error npm  v3.10.9
+52 error code E403
+53 error "You cannot publish over the previously published version 1.0.5." : @johnpaulvaughan/itunes-music-library-tracks
+54 error If you need help, you may report this error at:
+54 error     <https://github.com/npm/npm/issues>
+55 verbose exit [ 1, true ]
