@@ -4,7 +4,7 @@ import { Readable } from 'stream'
 const byline = require('byline')
 
 /**
- * Creates an stream of JSON tracks from an iTunes Library XML file. 
+ * Creates an stream of JSON tracks from an iTunes Library XML file.
  *
  * @param  String
  * @return ReadableStream of JSON objects
@@ -31,7 +31,7 @@ export function getItunesTracks(librarypath: string) {
 
 
 	/*
-	if (!module.exports.validPath(librarypath)) { 
+	if (!module.exports.validPath(librarypath)) {
 		streamOut.emit("error", 'Not a valid XML file')
 	}
 	*/
@@ -80,7 +80,7 @@ export function getItunesTracks(librarypath: string) {
 
 
 /**
- * Creates an stream of JSON playlists from an iTunes Library XML file. 
+ * Creates an stream of JSON playlists from an iTunes Library XML file.
  *
  * @param  String
  * @return ReadableStream of JSON objects
@@ -167,7 +167,7 @@ export function getItunesPlaylists(librarypath: string) {
 
 
 /**
- * Validates that the file is an itunes XML file. 
+ * Validates that the file is an itunes XML file.
  *
  * @param  string
  * @return Boolean
@@ -183,7 +183,7 @@ export function validPath(librarypath) {
 
 
 /**
- * Ensures we have a music track and not a video or other non-music item. 
+ * Ensures we have a music track and not a video or other non-music item.
  *
  * @param  Object
  * @return Boolean
@@ -195,7 +195,7 @@ export function objectIsPlaylist(obj) {
 
 
 /**
- * Ensures we have a playlist and not a track, video or other non-playlist item. 
+ * Ensures we have a playlist and not a track, video or other non-playlist item.
  *
  * @param  Object
  * @return Boolean
@@ -204,15 +204,12 @@ export function objectIsMusicTrack(obj) {
 	if (
 		(obj.Name || obj.Artist)
 		&& !obj['Playlist ID']
-		&& (obj.Kind ==
-			(
-				'MPEG audio file'
-				|| 'AAC audio file'
-				|| 'Matched AAC audio file'
-				|| 'Protected AAC audio file'
-				|| 'Purchased AAC audio file'
-			)
-		)
+		&& ((obj.Kind =='MPEG audio file')
+        || (obj.Kind =='AAC audio file')
+        || (obj.Kind =='Matched AAC audio file')
+        || (obj.Kind =='Protected AAC audio file')
+        || (obj.Kind =='Purchased AAC audio file')
+        || (obj.Kind =='Apple Music AAC audio file'))
 	) return true
 	else return false
 }
@@ -222,7 +219,7 @@ export function objectIsMusicTrack(obj) {
 
 
 /**
- * Creates a simple object with a key/value pair from the current XML line. 
+ * Creates a simple object with a key/value pair from the current XML line.
  *
  * @param  String
  * @return Object
