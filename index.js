@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+exports.buildProperty = exports.objectIsMusicTrack = exports.objectIsPlaylist = exports.validPath = exports.getItunesPlaylists = exports.getItunesTracks = void 0;
 var path = require("path");
 var fs = require("fs");
 var stream_1 = require("stream");
@@ -171,12 +172,12 @@ exports.objectIsPlaylist = objectIsPlaylist;
 function objectIsMusicTrack(obj) {
     if ((obj.Name || obj.Artist)
         && !obj['Playlist ID']
-        && (obj.Kind ==
-            ('MPEG audio file'
-                || 'AAC audio file'
-                || 'Matched AAC audio file'
-                || 'Protected AAC audio file'
-                || 'Purchased AAC audio file')))
+        && ((obj.Kind == 'MPEG audio file')
+            || (obj.Kind == 'AAC audio file')
+            || (obj.Kind == 'Matched AAC audio file')
+            || (obj.Kind == 'Protected AAC audio file')
+            || (obj.Kind == 'Purchased AAC audio file')
+            || (obj.Kind == 'Apple Music AAC audio file')))
         return true;
     else
         return false;
