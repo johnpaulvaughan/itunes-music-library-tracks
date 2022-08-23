@@ -1,37 +1,37 @@
 {
-  "name": "@johnpaulvaughan/itunes-music-library-tracks",
-  "version": "1.2.0",
-  "description": "Creates an stream of tracks or playlists from an iTunes Library XML file",
-  "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "dependencies": {
-    "byline": "^5.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^6.0.48",
-    "chai": "^3.5.0",
-    "mocha": "^3.1.2",
-    "typescript": "^2.0.10"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/johnpaulvaughan/itunes-music-library-tracks.git"
-  },
-  "keywords": [
-    "itunes",
-    "library",
-    "music",
-    "tracks"
-  ],
-  "author": "John Paul Vaughan <johnpaulvaughan@hotmail.com> (http://johnpaulvaughan.com)",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/johnpaulvaughan/itunes-music-library-tracks/issues"
-  },
-  "homepage": "https://github.com/johnpaulvaughan/itunes-music-library-tracks#readme"
+	"name": "@johnpaulvaughan/itunes-music-library-tracks",
+	"version": "1.2.1",
+	"description": "Creates an stream of tracks or playlists from an iTunes Library XML file",
+	"main": "index.js",
+	"directories": {
+		"test": "test"
+	},
+	"dependencies": {
+		"byline": "^5.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^6.0.48",
+		"chai": "^3.5.0",
+		"mocha": "^3.1.2",
+		"typescript": "^2.0.10"
+	},
+	"scripts": {
+		"test": "mocha"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/johnpaulvaughan/itunes-music-library-tracks.git"
+	},
+	"keywords": [
+		"itunes",
+		"library",
+		"music",
+		"tracks"
+	],
+	"author": "John Paul Vaughan <johnpaulvaughan@hotmail.com> (http://johnpaulvaughan.com)",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/johnpaulvaughan/itunes-music-library-tracks/issues"
+	},
+	"homepage": "https://github.com/johnpaulvaughan/itunes-music-library-tracks#readme"
 }
