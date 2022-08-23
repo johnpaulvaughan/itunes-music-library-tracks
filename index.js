@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildProperty = exports.objectIsMusicTrack = exports.objectIsPlaylist = exports.validPath = exports.getItunesPlaylists = exports.getItunesTracks = void 0;
 var path = require("path");
 var fs = require("fs");
@@ -18,10 +18,14 @@ function getItunesTracks(librarypath) {
     var line;
     var trackCount = 0;
     var streamIn;
-    var streamOut = new stream_1.Readable;
-    streamOut._read = function () { };
+    var streamOut = new stream_1.Readable();
+    streamOut._read = function () {
+        /* needed this stub to fix init issues */
+    };
     streamIn = fs.createReadStream(librarypath);
-    streamIn.on('error', function () { return streamOut.emit("error", 'The file you selected does not exist'); });
+    streamIn.on('error', function () {
+        return streamOut.emit('error', 'The file you selected does not exist');
+    });
     streamIn = byline.createStream(streamIn);
     /*
     if (!module.exports.validPath(librarypath)) {
@@ -30,21 +34,21 @@ function getItunesTracks(librarypath) {
     */
     streamIn.on('readable', function () {
         while (null !== (line = streamIn.read())) {
-            if (line.indexOf("<key>Library Persistent ID</key>") > -1) {
+            if (line.indexOf('<key>Library Persistent ID</key>') > -1) {
                 /* ADD A KEY/VALUE PROPERTY */
-                var iDString = String(line).match("<key>Library Persistent ID</key><string>(.*)</string>");
+                var iDString = String(line).match('<key>Library Persistent ID</key><string>(.*)</string>');
                 libraryID = iDString[1];
             }
-            else if (line.indexOf("<dict>") > -1) {
+            else if (line.indexOf('<dict>') > -1) {
                 /* START A NEW TRACK */
                 trackObj = {};
                 isTrack = true;
             }
-            else if (line.indexOf("<key>") > -1) {
+            else if (line.indexOf('<key>') > -1) {
                 /* ADD A PROPERTY TO THE TRACK */
                 Object.assign(trackObj, module.exports.buildProperty(line));
             }
-            else if (line.indexOf("</dict>") > -1) {
+            else if (line.indexOf('</dict>') > -1) {
                 /* END OF CURRENT TRACK */
                 if (module.exports.objectIsMusicTrack(trackObj)) {
                     trackObj['Library Persistent ID'] = libraryID; //add extra metadata
@@ -57,12 +61,12 @@ function getItunesTracks(librarypath) {
     });
     streamIn.on('end', function () {
         if (trackCount == 0)
-            streamOut.emit("error", 'No tracks exist in the file');
+            streamOut.emit('error', 'No tracks exist in the file');
         trackCount = 0; //reset it
         streamOut.push(null);
     });
     streamIn.on('error', function (err) {
-        streamOut.emit("error", 'Error parsing iTunes XML');
+        streamOut.emit('error', 'Error parsing iTunes XML');
     });
     return streamOut;
 }
@@ -82,19 +86,23 @@ function getItunesPlaylists(librarypath) {
     var playlistCount = 0;
     var dictDepth = 0;
     var streamIn;
-    var streamOut = new stream_1.Readable;
-    streamOut._read = function () { };
+    var streamOut = new stream_1.Readable();
+    streamOut._read = function () {
+        /* needed this stub to fix init issues */
+    };
     streamIn = fs.createReadStream(librarypath);
-    streamIn.on('error', function () { return streamOut.emit("error", 'The file you selected does not exist'); });
+    streamIn.on('error', function () {
+        return streamOut.emit('error', 'The file you selected does not exist');
+    });
     streamIn = byline.createStream(streamIn);
     streamIn.on('readable', function () {
         while (null !== (line = streamIn.read())) {
             if (!reachedPlaylistCollection) {
-                if (line.indexOf("<key>Playlists</key>") > -1)
+                if (line.indexOf('<key>Playlists</key>') > -1)
                     reachedPlaylistCollection = true;
             }
             else {
-                if (line.indexOf("<dict>") > -1) {
+                if (line.indexOf('<dict>') > -1) {
                     dictDepth++;
                     if (dictDepth == 1) {
                         /* START A NEW playlist */
@@ -102,17 +110,17 @@ function getItunesPlaylists(librarypath) {
                         playlistObj['tracks'] = [];
                     }
                 }
-                else if (line.indexOf("<key>Track ID</key>") > -1) {
+                else if (line.indexOf('<key>Track ID</key>') > -1) {
                     var track = module.exports.buildProperty(line);
                     playlistObj['tracks'].push(track['Track ID']);
                 }
-                else if (line.indexOf("<key>") > -1) {
+                else if (line.indexOf('<key>') > -1) {
                     /* ADD A PROPERTY TO THE playlist */
                     var newProp = module.exports.buildProperty(line);
                     if (!newProp['Playlist Items'])
                         Object.assign(playlistObj, newProp);
                 }
-                else if (line.indexOf("</dict>") > -1) {
+                else if (line.indexOf('</dict>') > -1) {
                     dictDepth--;
                     if (dictDepth == 0) {
                         /* END OF CURRENT playlist */
@@ -127,12 +135,12 @@ function getItunesPlaylists(librarypath) {
     });
     streamIn.on('end', function () {
         if (playlistCount == 0)
-            streamOut.emit("error", 'No playlists exist in the file');
+            streamOut.emit('error', 'No playlists exist in the file');
         playlistCount = 0; //reset it
         streamOut.push(null);
     });
     streamIn.on('error', function (err) {
-        streamOut.emit("error", 'Error parsing iTunes XML');
+        streamOut.emit('error', 'Error parsing iTunes XML');
     });
     return streamOut;
 }
@@ -170,14 +178,18 @@ exports.objectIsPlaylist = objectIsPlaylist;
  * @return Boolean
  */
 function objectIsMusicTrack(obj) {
-    if ((obj.Name || obj.Artist)
-        && !obj['Playlist ID']
-        && ((obj.Kind == 'MPEG audio file')
-            || (obj.Kind == 'AAC audio file')
-            || (obj.Kind == 'Matched AAC audio file')
-            || (obj.Kind == 'Protected AAC audio file')
-            || (obj.Kind == 'Purchased AAC audio file')
-            || (obj.Kind == 'Apple Music AAC audio file')))
+    if ((obj.Name || obj.Artist) &&
+        !obj['Playlist ID'] &&
+        (obj.Kind == 'MPEG audio file' ||
+            obj.Kind == 'AAC audio file' ||
+            obj.Kind == 'Matched AAC audio file' ||
+            obj.Kind == 'Protected AAC audio file' ||
+            obj.Kind == 'Purchased AAC audio file' ||
+            obj.Kind == 'Apple Music AAC audio file' ||
+            obj.Kind == 'Internet audio stream' ||
+            obj.Kind == 'MPEG-4 audio file' ||
+            obj.Kind == 'AIFF audio file' ||
+            obj.Kind == 'WAV audio file'))
         return true;
     else
         return false;
@@ -190,12 +202,12 @@ exports.objectIsMusicTrack = objectIsMusicTrack;
  * @return Object
  */
 function buildProperty(line) {
-    var key = String(line).match("<key>(.*)</key>");
-    var value = String(line).match("<integer>(.*)</integer>");
+    var key = String(line).match('<key>(.*)</key>');
+    var value = String(line).match('<integer>(.*)</integer>');
     if (!value)
-        value = String(line).match("<date>(.*)</date>");
+        value = String(line).match('<date>(.*)</date>');
     if (!value)
-        value = String(line).match("<string>(.*)</string>");
+        value = String(line).match('<string>(.*)</string>');
     var k = '';
     if (key != null && key.length > 1)
         k = key[1];
@@ -207,3 +219,4 @@ function buildProperty(line) {
     return o;
 }
 exports.buildProperty = buildProperty;
+//# sourceMappingURL=index.js.map
